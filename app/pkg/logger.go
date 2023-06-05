@@ -61,3 +61,7 @@ func pathExists(path string) (bool, error) {
 	}
 	return false, err
 }
+
+func Errorln(args ...interface{}) {
+	logrus.Errorln(args...)
+}

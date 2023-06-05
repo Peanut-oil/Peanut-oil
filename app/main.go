@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gin-gonic/gin/app/db"
 	"github.com/gin-gonic/gin/app/pkg"
 	"math/rand"
 	"time"
@@ -13,4 +14,8 @@ func main() {
 	// 设置日志输出
 	pkg.InitLogger("/root/serverlog/api")
 
+	// 初始化redis
+	db.ConnectRedis()
+
+	// 初始化mysql
 }
