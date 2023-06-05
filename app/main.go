@@ -18,4 +18,5 @@ func main() {
 	db.ConnectRedis()
 
 	// 初始化mysql
+	db.ConnectDB()
 }
