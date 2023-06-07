@@ -2,6 +2,8 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/app/def"
+	"github.com/gin-gonic/gin/app/util"
 	"net/http"
 )
 
@@ -13,8 +15,6 @@ func AddUserRoutes(rg *gin.RouterGroup) {
 }
 
 func Login(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"message": "pong",
-	})
+	c.JSON(http.StatusOK, util.Response(def.CodeSucc, "ok", nil))
 	return
 }

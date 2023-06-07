@@ -8,3 +8,8 @@ const (
 	MysqlAddr     = "root:qq937634115@tcp(173.82.188.219:3306)/elastic_pet?charset=utf8mb4"
 	ServerLog     = "/root/serverlog/api"
 )
+
+const (
+	CodeSucc = 200
+	CodeErr  = 500
+)
