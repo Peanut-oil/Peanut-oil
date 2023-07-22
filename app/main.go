@@ -3,10 +3,10 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/app/api"
+	"github.com/gin-gonic/gin/app/auth"
 	"github.com/gin-gonic/gin/app/db"
 	"github.com/gin-gonic/gin/app/def"
 	"github.com/gin-gonic/gin/app/pkg"
-	"github.com/gin-gonic/gin/auth"
 	"log"
 	"math/rand"
 	"os"

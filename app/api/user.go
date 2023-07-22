@@ -2,9 +2,10 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/app/auth"
 	"github.com/gin-gonic/gin/app/def"
+	"github.com/gin-gonic/gin/app/service"
 	"github.com/gin-gonic/gin/app/util"
-	"github.com/gin-gonic/gin/auth"
 	"net/http"
 )
 
@@ -19,6 +20,11 @@ func AddUserRoutes(rg *gin.RouterGroup) {
 // 统一通过设备id登陆
 func Login(c *gin.Context) {
 	deviceId := c.GetString("deviceId")
+	err := service.UserLoginByDeviceId(deviceId)
+	if err != nil {
+		c.JSON(http.StatusOK, util.Response(def.CodeError, err.Error(), nil))
+		return
+	}
 
 	c.JSON(http.StatusOK, util.Response(def.CodeSucc, "ok", nil))
 	return

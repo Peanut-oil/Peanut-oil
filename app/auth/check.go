@@ -6,9 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/app/db"
 	"github.com/gin-gonic/gin/app/def"
+	"github.com/gin-gonic/gin/app/helper"
 	"github.com/gin-gonic/gin/app/pkg/crypto"
 	"github.com/gin-gonic/gin/app/pkg/serialize"
-	"github.com/gin-gonic/gin/helper"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"sort"
@@ -66,7 +66,7 @@ func CheckLogin(c *gin.Context) {
 		}
 	}
 	token := c.Request.FormValue("sid")
-	// 同意使用设备号登陆
+	// 统一使用设备号登陆
 	deviceId := helper.JwtDecode(token)
 	if deviceId == "" {
 		logrus.Info(c.Request.RequestURI, c.Request.Form)
