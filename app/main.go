@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin/app/db"
 	"github.com/gin-gonic/gin/app/def"
 	"github.com/gin-gonic/gin/app/pkg"
+	"github.com/gin-gonic/gin/auth"
 	"log"
 	"math/rand"
 	"os"
@@ -33,6 +34,7 @@ func main() {
 func serverRun(port string) {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
+	router.Use(auth.CheckSign())
 	v1 := router.Group("/genus")
 	api.AddUserRoutes(v1)
 	router.Run(":" + port)
