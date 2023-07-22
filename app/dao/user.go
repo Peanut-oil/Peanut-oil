@@ -1,5 +1,16 @@
 package dao
 
+const (
+	// todo
+	DefaultAvatar = ""
+	DefaultGender = GenderMan
+
+	GenderMan   = 1
+	GenderWoMan = 2
+
+	UserLogOut = 1
+)
+
 type UserInfo struct {
 	DeviceId   string `json:"device_id" redis:"deviceid" db:"device_id"`
 	Uid        int    `json:"uid" redis:"uid" db:"uid"`

@@ -20,7 +20,7 @@ func AddUserRoutes(rg *gin.RouterGroup) {
 // 统一通过设备id登陆
 func Login(c *gin.Context) {
 	deviceId := c.GetString("deviceId")
-	err := service.UserLoginByDeviceId(deviceId)
+	_, err := service.UserLoginByDeviceId(deviceId)
 	if err != nil {
 		c.JSON(http.StatusOK, util.Response(def.CodeError, err.Error(), nil))
 		return

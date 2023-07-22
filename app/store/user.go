@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin/app/helper"
 	"github.com/gomodule/redigo/redis"
 	"github.com/sirupsen/logrus"
+	"strings"
 )
 
 func saveCacheUser(info *dao.UserInfo) error {
@@ -78,4 +79,35 @@ func GetUserInfoByDeviceId(deviceId string) *dao.UserInfo {
 	}
 
 	return u
+}
+
+func AddUserInfo(info *dao.UserInfo) (int, error) {
+	uid, err := insertUserInfo(info)
+	if err != nil {
+		return 0, err
+	}
+	info.Uid = uid
+	err = saveCacheUser(info)
+	if err != nil {
+		return 0, err
+	}
+	return uid, nil
+}
+
+func insertUserInfo(info *dao.UserInfo) (int, error) {
+	sqlStr := "INSERT INTO `" + def.TableUserInfo + "` ("
+	// 获取所有field及其value
+	fields, values := helper.GetStructFieldsAndValuesExcept(*info, []string{})
+	query := sqlStr + strings.Join(fields, ",") + ") values (" + strings.Join(values, ",") + ")"
+	res, err := db.MysqlDB.NamedExec(query, info)
+	if err != nil {
+		logrus.WithField("err", err.Error()).Warn("insert user info err")
+		return 0, err
+	}
+	uid, err := res.LastInsertId()
+	if err != nil {
+		logrus.WithField("err", err.Error()).Warn("get insert id err")
+		return 0, err
+	}
+	return int(uid), nil
 }

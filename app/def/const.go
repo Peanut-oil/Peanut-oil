@@ -15,6 +15,8 @@ const (
 	CodeUnAuth         = 401
 	CodeRequestTooFast = 603
 
+	MsgSystemErr = "system error,please try again later"
+
 	// todo
 	JwtEncryptKey = ""
 	SignKey       = ""
