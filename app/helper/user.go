@@ -4,6 +4,7 @@ import "github.com/gin-gonic/gin/app/dao"
 
 func GenerateUserInfo(deviceId string) *dao.UserInfo {
 	info := new(dao.UserInfo)
+	info.DeviceId = deviceId
 	info.NickName = GenerateNickName(deviceId)
 	info.Avatar = dao.DefaultAvatar
 	info.Gender = dao.DefaultGender
