@@ -8,10 +8,12 @@ func GenerateUserInfo(deviceId string) *dao.UserInfo {
 	info.Avatar = dao.DefaultAvatar
 	info.Gender = dao.DefaultGender
 	info.CreateTime = Millisecond() / 1000
+	info.UpdateTime = Millisecond() / 1000
 
 	return info
 }
 
+// todo
 func GenerateNickName(deviceId string) string {
-	return "genus" + deviceId[35:40]
+	return "genus" + deviceId[1:5]
 }

@@ -18,7 +18,8 @@ type UserInfo struct {
 	Avatar     string `json:"avatar" redis:"avatar" db:"avatar"`
 	Gender     int    `json:"gender" redis:"gender" db:"gender"`
 	CreateTime int    `json:"create_time" redis:"create_time" db:"create_time"`
+	UpdateTime int    `json:"update_time" redis:"update_time" db:"update_time"`
 	Coin       int    `json:"coin" redis:"coin" db:"coin"`
 	Phone      string `json:"phone" redis:"phone" db:"phone"`
-	Logout     bool   `json:"logout" db:"logout" redis:"logout"`
+	Logout     int    `json:"logout" db:"logout" redis:"logout"`
 }

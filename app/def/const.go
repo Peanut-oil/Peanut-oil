@@ -18,8 +18,8 @@ const (
 	MsgSystemErr = "system error,please try again later"
 
 	// todo
-	JwtEncryptKey = ""
-	SignKey       = ""
+	JwtEncryptKey = "genuisskxhuisvusicabbcosjxcbsodnojivyf"
+	SignKey       = "genuisiscyewvcmihuxwyubxewniciegvc"
 )
 
 // 时间相关
