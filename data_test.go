@@ -16,12 +16,13 @@ import (
 )
 
 func TestLoadSign(t *testing.T) {
-	sid := generateSid()
+	deviceId := "1233dddsx"
+	sid := deviceId
 	signKey := def.SignKey
 	method := "POST"
 	path := "/genus/user/login"
 	params := map[string][]string{
-		"sid": {sid},
+		"device_id": {sid},
 	}
 	var paramStr string
 	keys := make([]string, 0, len(params))

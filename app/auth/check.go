@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/app/db"
 	"github.com/gin-gonic/gin/app/def"
-	"github.com/gin-gonic/gin/app/helper"
 	"github.com/gin-gonic/gin/app/pkg/crypto"
 	"github.com/gin-gonic/gin/app/pkg/serialize"
 	"github.com/sirupsen/logrus"
@@ -51,8 +50,8 @@ func CheckSign() gin.HandlerFunc {
 				"sign":      sign,
 				"sign2":     sign2,
 				"sourceStr": sourceStr,
-			}).Info("签名不正确")
-			c.AbortWithStatusJSON(http.StatusOK, serialize.Response(500, "签名不正确", nil))
+			}).Info("incorrect sign")
+			c.AbortWithStatusJSON(http.StatusOK, serialize.Response(500, "incorrect sign", nil))
 			return
 		}
 	}
@@ -65,12 +64,11 @@ func CheckLogin(c *gin.Context) {
 			return
 		}
 	}
-	token := c.Request.FormValue("sid")
 	// 统一使用设备号登陆
-	deviceId := helper.JwtDecode(token)
+	deviceId := c.Request.FormValue("device_id")
 	if deviceId == "" {
 		logrus.Info(c.Request.RequestURI, c.Request.Form)
-		c.JSON(http.StatusOK, serialize.Response(def.CodeUnAuth, "请先登录", nil))
+		c.JSON(http.StatusOK, serialize.Response(def.CodeUnAuth, "please login", nil))
 		c.Abort()
 		return
 	}
@@ -79,7 +77,7 @@ func CheckLogin(c *gin.Context) {
 	key := def.StringUserLock + deviceId + "-" + path
 	res, err := db.MainRedis.Do("set", key, 1, "ex", 5, "nx")
 	if err != nil || res != "OK" {
-		c.JSON(http.StatusOK, serialize.Response(def.CodeRequestTooFast, "请求太快了，请稍后再试~", nil))
+		c.JSON(http.StatusOK, serialize.Response(def.CodeRequestTooFast, def.MsgSystemErr, nil))
 		c.Abort()
 		return
 	}
