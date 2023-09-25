@@ -11,6 +11,19 @@ const (
 	UserLogOut = 1
 )
 
+type ZsetItem struct {
+	Member int `json:"member"`
+	Score  int `json:"score"`
+}
+
+type RankUserInfo struct {
+	Rank     int    `json:"rank"`
+	Score    int    `json:"score"`
+	Uid      int    `json:"uid"`
+	Avatar   string `json:"avatar"`
+	NickName string `json:"nick_name"`
+}
+
 type UserInfo struct {
 	DeviceId   string `json:"device_id" redis:"deviceid" db:"device_id"`
 	Uid        int    `json:"uid" redis:"uid" db:"uid"`

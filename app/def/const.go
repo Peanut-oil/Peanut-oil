@@ -24,11 +24,12 @@ const (
 
 // 时间相关
 const (
-	MinSecond      = 60
-	HourSecond     = 60 * 60
-	DaySecond      = 24 * 60 * 60
-	WeekSecond     = DaySecond * 7
-	UserInfoExpire = DaySecond * 7
+	MinSecond          = 60
+	HourSecond         = 60 * 60
+	DaySecond          = 24 * 60 * 60
+	WeekSecond         = DaySecond * 7
+	UserInfoExpire     = DaySecond * 7
+	DefaultResetExpire = DaySecond * 3
 
 	TimeFormatDay              = "2006-01-02"
 	TimeFormatDayNoSep         = "20060102"

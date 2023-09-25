@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin/app/dao"
 	"github.com/gin-gonic/gin/app/def"
 	"github.com/gin-gonic/gin/app/helper"
 	"github.com/gin-gonic/gin/app/store"
@@ -24,4 +25,33 @@ func UserLoginByDeviceId(deviceId string) (int, error) {
 	}
 
 	return userInfo.Uid, nil
+}
+
+func GetRankList(rankType int) ([]*dao.RankUserInfo, error) {
+	topList := store.GetTopList(rankType, 10)
+	res := make([]*dao.RankUserInfo, 0)
+	if len(topList) == 0 {
+		return res, errors.New("无排行数据")
+	}
+	uids := make([]int, len(topList))
+	for _, info := range topList {
+		uids = append(uids, info.Member)
+	}
+	userInfos, err := store.PipeGetUserInfo(uids)
+	if err != nil || len(uids) != len(userInfos) {
+		return res, errors.New("系统异常")
+	}
+
+	for index, info := range topList {
+		item := &dao.RankUserInfo{
+			Uid:      info.Member,
+			Score:    info.Score,
+			Rank:     index + 1,
+			Avatar:   userInfos[index].Avatar,
+			NickName: userInfos[index].NickName,
+		}
+		res = append(res, item)
+	}
+
+	return res, nil
 }
