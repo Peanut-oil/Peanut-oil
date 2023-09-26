@@ -15,7 +15,6 @@ func AddUserRoutes(rg *gin.RouterGroup) {
 	user := rg.Group("/user", auth.CheckLogin)
 	{
 		user.POST("/login", Login)                 // 用户登陆&注册
-		user.POST("/create_order", CreateOrder)    // 创建订单
 		user.POST("/get_rank_list", GetRankList)   // 获取排行榜单
 		user.POST("/add_rank_score", AddRankScore) // 增加排行分数
 	}
@@ -71,8 +70,4 @@ func Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, util.Response(def.CodeSucc, "ok", nil))
 	return
-}
-
-func CreateOrder(c *gin.Context) {
-
 }
