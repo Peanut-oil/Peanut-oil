@@ -25,7 +25,7 @@ func GetTopList(rankType, limit int) []dao.ZsetItem {
 
 func AddRankScore(score, uid, rankType int) error {
 	key := def.ZSetRankList + strconv.Itoa(rankType)
-	_, err := db.MainRedis.Do("ZAdd", key, score, uid)
+	_, err := db.MainRedis.Do("ZIncrBy", key, score, uid)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{"uid": uid, "score": score}).Errorln("AddRankScore err:", err)
 		return err

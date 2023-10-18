@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/facebookgo/grace/gracehttp"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/app/api"
 	"github.com/gin-gonic/gin/app/auth"
@@ -9,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin/app/pkg"
 	"log"
 	"math/rand"
+	"net/http"
 	"os"
 	"strconv"
 	"time"
@@ -37,5 +39,14 @@ func serverRun(port string) {
 	router.Use(auth.CheckSign())
 	v1 := router.Group("/genus")
 	api.AddUserRoutes(v1)
-	router.Run(":" + port)
+
+	server := &http.Server{
+		Addr:         ":" + port,
+		WriteTimeout: 20 * time.Second,
+		Handler:      router,
+	}
+	err := gracehttp.Serve(server)
+	if err != nil {
+		log.Fatal("服务启动失败:", err.Error())
+	}
 }
