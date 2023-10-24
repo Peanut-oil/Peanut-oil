@@ -16,6 +16,7 @@ const (
 	CodeRequestTooFast = 603
 
 	MsgSystemErr = "system error,please try again later"
+	MsgParamErr  = "param err"
 
 	// todo
 	JwtEncryptKey = "genuisskxhuisvusicabbcosjxcbsodnojivyf"

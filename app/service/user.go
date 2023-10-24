@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func UserLoginByDeviceId(deviceId string) (int, error) {
+func UserLoginByDeviceId(deviceId string) (*dao.UserInfo, error) {
 	logrus.WithFields(logrus.Fields{"deviceId": deviceId})
 	userInfo := store.GetUserInfoByDeviceId(deviceId)
 	// 用户信息为null，直接注册
@@ -19,12 +19,13 @@ func UserLoginByDeviceId(deviceId string) (int, error) {
 		uid, err := store.AddUserInfo(registerInfo)
 		if err != nil {
 			logrus.Errorf("[UserLoginByDeviceId] AddUserInfo err:%s", err.Error())
-			return 0, errors.New(def.MsgSystemErr)
+			return &dao.UserInfo{}, errors.New(def.MsgSystemErr)
 		}
-		return uid, nil
+		registerInfo.Uid = uid
+		return registerInfo, nil
 	}
 
-	return userInfo.Uid, nil
+	return userInfo, nil
 }
 
 func GetRankList(rankType int) ([]*dao.RankUserInfo, error) {

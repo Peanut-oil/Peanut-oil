@@ -14,7 +14,7 @@ import (
 func AddUserRoutes(rg *gin.RouterGroup) {
 	user := rg.Group("/user", auth.CheckLogin)
 	{
-		user.POST("/login", Login)                 // 用户登陆&注册
+		user.POST("/get_user_info", GetUserInfo)   // 获取用户信息
 		user.POST("/get_rank_list", GetRankList)   // 获取排行榜单
 		user.POST("/add_rank_score", AddRankScore) // 增加排行分数
 	}
@@ -26,7 +26,7 @@ func GetRankList(c *gin.Context) {
 	}
 	err := c.ShouldBind(&ps)
 	if err != nil {
-		c.JSON(http.StatusOK, helper.Response(def.CodeError, "param error", nil))
+		c.JSON(http.StatusOK, helper.Response(def.CodeError, def.MsgParamErr, nil))
 		return
 	}
 	rankList, err := service.GetRankList(ps.RankType)
@@ -46,12 +46,12 @@ func AddRankScore(c *gin.Context) {
 	}
 	err := c.ShouldBind(&ps)
 	if err != nil {
-		c.JSON(http.StatusOK, helper.Response(def.CodeError, "param error", nil))
+		c.JSON(http.StatusOK, helper.Response(def.CodeError, def.MsgParamErr, nil))
 		return
 	}
 	err = store.AddRankScore(ps.Score, ps.Uid, ps.RankType)
 	if err != nil {
-		c.JSON(http.StatusOK, util.Response(def.CodeError, "系统异常", nil))
+		c.JSON(http.StatusOK, util.Response(def.CodeError, def.MsgSystemErr, nil))
 		return
 	}
 
@@ -60,14 +60,14 @@ func AddRankScore(c *gin.Context) {
 }
 
 // 统一通过设备id登陆
-func Login(c *gin.Context) {
+func GetUserInfo(c *gin.Context) {
 	deviceId := c.GetString("deviceId")
-	_, err := service.UserLoginByDeviceId(deviceId)
+	uInfo, err := service.UserLoginByDeviceId(deviceId)
 	if err != nil {
 		c.JSON(http.StatusOK, util.Response(def.CodeError, err.Error(), nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, util.Response(def.CodeSucc, "ok", nil))
+	c.JSON(http.StatusOK, util.Response(def.CodeSucc, "ok", uInfo))
 	return
 }
