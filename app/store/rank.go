@@ -9,9 +9,9 @@ import (
 	"strconv"
 )
 
-func GetTopList(rankType, limit int) []dao.ZsetItem {
+func GetTopList(rankTypeOneClass, rankTypeTwoClass, limit int) []dao.ZsetItem {
 	list := make([]dao.ZsetItem, 0)
-	key := def.ZSetRankList + strconv.Itoa(rankType)
+	key := def.ZSetRankList + strconv.Itoa(rankTypeOneClass) + ":" + strconv.Itoa(rankTypeTwoClass)
 	reply, err := redis.Values(db.MainRedis.Do("ZREVRANGEBYSCORE", key, "+inf", 0, "WITHSCORES", "LIMIT", 0, limit))
 	if err != nil && err != redis.ErrNil {
 		logrus.Errorln("[GetTopList] values err", err)
@@ -23,12 +23,13 @@ func GetTopList(rankType, limit int) []dao.ZsetItem {
 	return list
 }
 
-func AddRankScore(score, uid, rankType int) error {
-	key := def.ZSetRankList + strconv.Itoa(rankType)
-	_, err := db.MainRedis.Do("ZIncrBy", key, score, uid)
+func AddRankScore(score, rankTypeOneClass, rankTypeTwoClass int, did string) error {
+	key := def.ZSetRankList + strconv.Itoa(rankTypeOneClass) + ":" + strconv.Itoa(rankTypeTwoClass)
+	_, err := db.MainRedis.Do("ZIncrBy", key, score, did)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{"uid": uid, "score": score}).Errorln("AddRankScore err:", err)
+		logrus.WithFields(logrus.Fields{"did": did, "score": score}).Errorln("AddRankScore err:", err)
 		return err
 	}
+
 	return nil
 }

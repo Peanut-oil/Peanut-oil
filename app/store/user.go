@@ -233,3 +233,7 @@ func insertUserInfo(info *dao.UserInfo) (int, error) {
 	}
 	return int(uid), nil
 }
+
+func UpdateUserInfo(info *dao.UserInfo) error {
+	return nil
+}

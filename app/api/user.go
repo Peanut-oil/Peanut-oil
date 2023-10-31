@@ -22,14 +22,15 @@ func AddUserRoutes(rg *gin.RouterGroup) {
 
 func GetRankList(c *gin.Context) {
 	var ps struct {
-		RankType int `json:"rank_type" form:"rank_type" binding:"required,min=1,max=3"`
+		RankTypeOneClass int `json:"rank_type_one_class" form:"rank_type_one_class" binding:"required,min=1,max=3"`
+		RankTypeTwoClass int `json:"rank_type_two_class" form:"rank_type_one_class" binding:"required,min=1,max=3"`
 	}
 	err := c.ShouldBind(&ps)
 	if err != nil {
 		c.JSON(http.StatusOK, helper.Response(def.CodeError, def.MsgParamErr, nil))
 		return
 	}
-	rankList, err := service.GetRankList(ps.RankType)
+	rankList, err := service.GetRankList(ps.RankTypeOneClass, ps.RankTypeTwoClass)
 	if err != nil {
 		c.JSON(http.StatusOK, util.Response(def.CodeError, err.Error(), nil))
 		return
@@ -39,17 +40,20 @@ func GetRankList(c *gin.Context) {
 }
 
 func AddRankScore(c *gin.Context) {
+	deviceId := c.GetString("did")
 	var ps struct {
-		Uid      int `json:"uid" form:"uid" binding:"required"`
-		RankType int `json:"rank_type" form:"rank_type" binding:"required"`
-		Score    int `json:"score" form:"score" binding:"required"`
+		RankTypeOneClass int    `json:"rank_type_one_class" form:"rank_type_one_class" binding:"required,min=1,max=3"`
+		RankTypeTwoClass int    `json:"rank_type_two_class" form:"rank_type_two_class" binding:"required,min=1,max=3"`
+		Score            int    `json:"score" form:"score" binding:"required"`
+		NickName         string `json:"nick_name" form:"nick_name"`
+		Avatar           string `json:"avatar" form:"avatar"`
 	}
 	err := c.ShouldBind(&ps)
 	if err != nil {
 		c.JSON(http.StatusOK, helper.Response(def.CodeError, def.MsgParamErr, nil))
 		return
 	}
-	err = store.AddRankScore(ps.Score, ps.Uid, ps.RankType)
+	err = store.AddRankScore(ps.Score, ps.RankTypeOneClass, ps.RankTypeTwoClass, ps.NickName, ps.Avatar, deviceId)
 	if err != nil {
 		c.JSON(http.StatusOK, util.Response(def.CodeError, def.MsgSystemErr, nil))
 		return

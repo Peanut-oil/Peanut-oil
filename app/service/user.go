@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin/app/dao"
 	"github.com/gin-gonic/gin/app/def"
 	"github.com/gin-gonic/gin/app/helper"
+	"github.com/gin-gonic/gin/app/pkg/graceful"
 	"github.com/gin-gonic/gin/app/store"
 	"github.com/sirupsen/logrus"
 )
@@ -28,8 +29,8 @@ func UserLoginByDeviceId(deviceId string) (*dao.UserInfo, error) {
 	return userInfo, nil
 }
 
-func GetRankList(rankType int) ([]*dao.RankUserInfo, error) {
-	topList := store.GetTopList(rankType, 10)
+func GetRankList(rankTypeOneClass, rankTypeTwoClass int) ([]*dao.RankUserInfo, error) {
+	topList := store.GetTopList(rankTypeOneClass, rankTypeTwoClass, 10)
 	res := make([]*dao.RankUserInfo, 0)
 	if len(topList) == 0 {
 		return res, errors.New("无排行数据")
@@ -55,4 +56,31 @@ func GetRankList(rankType int) ([]*dao.RankUserInfo, error) {
 	}
 
 	return res, nil
+}
+
+func AddRankScoreWithInfo(score, rankTypeOneClass, rankTypeTwoClass int, nickName, avatar, did string) error {
+	err := store.AddRankScore(score, rankTypeOneClass, rankTypeTwoClass, did)
+	if err != nil {
+		return err
+	}
+
+	// 更新用户信息
+	graceful.Go(func() {
+		userInfo := store.GetUserInfoByDeviceId(did)
+		// 不存在则插入
+		if userInfo == nil {
+			registerInfo := helper.GenerateUserInfoWithNameAndAvatar(did, nickName, avatar)
+			_, err := store.AddUserInfo(registerInfo)
+			if err != nil {
+				logrus.Errorf("[AddRankScoreWithInfo] AddUserInfo err:%s", err.Error())
+				return
+			}
+		} else {
+			userInfo.NickName = nickName
+			userInfo.Avatar = avatar
+
+		}
+	})
+
+	return nil
 }
