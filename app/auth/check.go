@@ -19,7 +19,7 @@ func CheckSign() gin.HandlerFunc {
 		if c.Request.Method == "GET" {
 			return
 		}
-		deviceId := c.GetString("deviceId")
+		deviceId := c.GetString("did")
 		if deviceId == "" {
 			c.AbortWithStatusJSON(http.StatusOK, serialize.Response(500, "incorrect param", nil))
 			return

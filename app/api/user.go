@@ -61,7 +61,7 @@ func AddRankScore(c *gin.Context) {
 
 // 统一通过设备id登陆
 func GetUserInfo(c *gin.Context) {
-	deviceId := c.GetString("deviceId")
+	deviceId := c.GetString("did")
 	uInfo, err := service.UserLoginByDeviceId(deviceId)
 	if err != nil {
 		c.JSON(http.StatusOK, util.Response(def.CodeError, err.Error(), nil))
