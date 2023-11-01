@@ -11,6 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func saveCacheUser(info *dao.UserInfo) error {
@@ -234,6 +235,30 @@ func insertUserInfo(info *dao.UserInfo) (int, error) {
 	return int(uid), nil
 }
 
-func UpdateUserInfo(info *dao.UserInfo) error {
+func UpdateUserInfo(fields map[string]interface{}, uid int, did string) error {
+	set := ""
+	for k := range fields {
+		set += k + "=:" + k + ","
+	}
+	set = strings.TrimRight(set, ",")
+	fields["uid"] = uid
+	fields["update_time"] = int(time.Now().Unix())
+	_, err := db.MysqlDB.NamedExec("update user_info set "+set+" where uid=:uid", fields)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"uid": uid,
+			"set": set,
+			"did": did,
+		}).Warn(err)
+		return err
+	}
+	checkUserInfoTTL(did)
+	key := def.HSetUserInfo + did
+	_, err = db.MainRedis.Do("hMSet", redis.Args{}.Add(key).AddFlat(fields)...)
+	if err != nil {
+		logrus.WithField("err", err).Warn("hMSet err")
+		return err
+	}
+	db.MainRedis.Do("expire", key, def.UserInfoExpire)
 	return nil
 }

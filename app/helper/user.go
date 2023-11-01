@@ -2,31 +2,26 @@ package helper
 
 import "github.com/gin-gonic/gin/app/dao"
 
-func GenerateUserInfoWithNameAndAvatar(deviceId, nickName, avatar string) *dao.UserInfo {
-	info := new(dao.UserInfo)
-	info.DeviceId = deviceId
-	info.NickName = nickName
-	info.Avatar = avatar
-	info.Gender = dao.DefaultGender
-	info.CreateTime = Millisecond() / 1000
-	info.UpdateTime = Millisecond() / 1000
+func GetUpdateUserInfoChangeFields(info *dao.UserInfo, avatar, nickname, country string, scoreTime, scoreSpeed, scoreHeight int) map[string]interface{} {
+	fields := make(map[string]interface{}, 0)
+	if avatar != "" && info.Avatar != avatar {
+		fields["avatar"] = avatar
+	}
+	if nickname != "" && info.NickName != nickname {
+		fields["nickname"] = nickname
+	}
+	if country != "" && info.Country != country {
+		fields["country"] = country
+	}
+	if scoreTime != 0 {
+		fields["score_time"] = info.ScoreTime + scoreTime
+	}
+	if scoreSpeed != 0 {
+		fields["score_speed"] = info.ScoreSpeed + scoreSpeed
+	}
+	if scoreHeight != 0 {
+		fields["score_height"] = info.ScoreHeight + scoreHeight
+	}
 
-	return info
-}
-
-func GenerateUserInfo(deviceId string) *dao.UserInfo {
-	info := new(dao.UserInfo)
-	info.DeviceId = deviceId
-	info.NickName = GenerateNickName(deviceId)
-	info.Avatar = dao.DefaultAvatar
-	info.Gender = dao.DefaultGender
-	info.CreateTime = Millisecond() / 1000
-	info.UpdateTime = Millisecond() / 1000
-
-	return info
-}
-
-// todo
-func GenerateNickName(deviceId string) string {
-	return "genus" + deviceId[1:5]
+	return fields
 }

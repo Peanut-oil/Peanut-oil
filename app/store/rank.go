@@ -23,13 +23,13 @@ func GetTopList(rankTypeOneClass, rankTypeTwoClass, limit int) []dao.ZsetItem {
 	return list
 }
 
-func AddRankScore(score, rankTypeOneClass, rankTypeTwoClass int, did string) error {
-	key := def.ZSetRankList + strconv.Itoa(rankTypeOneClass) + ":" + strconv.Itoa(rankTypeTwoClass)
-	_, err := db.MainRedis.Do("ZIncrBy", key, score, did)
-	if err != nil {
-		logrus.WithFields(logrus.Fields{"did": did, "score": score}).Errorln("AddRankScore err:", err)
-		return err
-	}
+func AddRankScore(scoreTime, scoreSpeed, scoreHeight int, did string) error {
+	timeKey := def.ZSetRankList + strconv.Itoa(def.RankTypeTime)
+	speedKey := def.ZSetRankList + strconv.Itoa(def.RankTypeSpeed)
+	heightKey := def.ZSetRankList + strconv.Itoa(def.RankTypeHeight)
 
+	db.MainRedis.Do("ZIncrBy", timeKey, scoreTime, did)
+	db.MainRedis.Do("ZIncrBy", speedKey, scoreSpeed, did)
+	db.MainRedis.Do("ZIncrBy", heightKey, scoreHeight, did)
 	return nil
 }

@@ -7,8 +7,8 @@ const (
 
 // 排行榜
 const (
-	ZSetRankList = "genus:rank_list:"
-	RankType1    = 1
-	RankType2    = 2
-	RankType3    = 3
+	ZSetRankList   = "genus:rank_list:"
+	RankTypeTime   = 1
+	RankTypeSpeed  = 2
+	RankTypeHeight = 3
 )
