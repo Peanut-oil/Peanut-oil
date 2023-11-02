@@ -12,16 +12,21 @@ const (
 )
 
 type ZsetItem struct {
-	Member int `json:"member"`
-	Score  int `json:"score"`
+	Member string `json:"member"`
+	Score  int    `json:"score"`
 }
 
 type RankUserInfo struct {
+	List     []*RankInfo `json:"list"`
+	SelfRank *RankInfo   `json:"self_rank"`
+}
+
+type RankInfo struct {
 	Rank     int    `json:"rank"`
 	Score    int    `json:"score"`
-	Uid      int    `json:"uid"`
+	Country  string `json:"country"`
 	Avatar   string `json:"avatar"`
-	NickName string `json:"nick_name"`
+	NickName string `json:"nickname"`
 }
 
 type UserInfo struct {

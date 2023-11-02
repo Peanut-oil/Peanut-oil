@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"github.com/gin-gonic/gin/app/dao"
+	"github.com/gin-gonic/gin/app/def"
 	"github.com/gin-gonic/gin/app/helper"
 	"github.com/gin-gonic/gin/app/pkg/graceful"
 	"github.com/gin-gonic/gin/app/store"
@@ -49,30 +50,54 @@ func userLoginByDeviceId(scoreTime, scoreSpeed, scoreHeight int, nickName, avata
 	return userInfo, nil, false
 }
 
-func GetRankList(rankTypeOneClass, rankTypeTwoClass int) ([]*dao.RankUserInfo, error) {
-	topList := store.GetTopList(rankTypeOneClass, rankTypeTwoClass, 10)
-	res := make([]*dao.RankUserInfo, 0)
+func GetRankList(deviceId string, scoreType int) (dao.RankUserInfo, error) {
+	res := dao.RankUserInfo{}
+	topList := store.GetTopList(scoreType, 10)
 	if len(topList) == 0 {
 		return res, errors.New("无排行数据")
 	}
-	uids := make([]int, len(topList))
+
+	dids := make([]string, len(topList))
 	for _, info := range topList {
-		uids = append(uids, info.Member)
+		dids = append(dids, info.Member)
 	}
-	userInfos, err := store.PipeGetUserInfo(uids)
-	if err != nil || len(uids) != len(userInfos) {
+	userInfos, err := store.PipeGetUserInfo(dids)
+	if err != nil || len(dids) != len(userInfos) {
 		return res, errors.New("系统异常")
 	}
 
 	for index, info := range topList {
-		item := &dao.RankUserInfo{
-			Uid:      info.Member,
+		item := &dao.RankInfo{
 			Score:    info.Score,
 			Rank:     index + 1,
 			Avatar:   userInfos[index].Avatar,
 			NickName: userInfos[index].NickName,
+			Country:  userInfos[index].Country,
 		}
-		res = append(res, item)
+		if userInfos[index].DeviceId == deviceId {
+			res.SelfRank = item
+		}
+		res.List = append(res.List, item)
+	}
+
+	if res.SelfRank == nil {
+		// 获取用户信息
+		myInfo := store.GetUserInfoByDeviceId(deviceId)
+		if myInfo != nil {
+			res.SelfRank = &dao.RankInfo{
+				Avatar:   myInfo.Avatar,
+				NickName: myInfo.NickName,
+				Country:  myInfo.Country,
+			}
+			switch scoreType {
+			case def.RankTypeTime:
+				res.SelfRank.Score = myInfo.ScoreTime
+			case def.RankTypeSpeed:
+				res.SelfRank.Score = myInfo.ScoreSpeed
+			case def.RankTypeHeight:
+				res.SelfRank.Score = myInfo.ScoreHeight
+			}
+		}
 	}
 
 	return res, nil

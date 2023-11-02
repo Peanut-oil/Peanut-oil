@@ -21,15 +21,16 @@ func AddUserRoutes(rg *gin.RouterGroup) {
 
 func GetRankList(c *gin.Context) {
 	var ps struct {
-		RankTypeOneClass int `json:"rank_type_one_class" form:"rank_type_one_class" binding:"required,min=1,max=3"`
-		RankTypeTwoClass int `json:"rank_type_two_class" form:"rank_type_one_class" binding:"required,min=1,max=3"`
+		DeviceId  string `json:"device_id" form:"device_id" binding:"required"`
+		ScoreType int    `json:"score_type" form:"score_type" binding:"required,min=1,max=3"`
 	}
 	err := c.ShouldBind(&ps)
 	if err != nil {
 		c.JSON(http.StatusOK, helper.Response(def.CodeError, def.MsgParamErr, nil))
 		return
 	}
-	rankList, err := service.GetRankList(ps.RankTypeOneClass, ps.RankTypeTwoClass)
+
+	rankList, err := service.GetRankList(ps.DeviceId, ps.ScoreType)
 	if err != nil {
 		c.JSON(http.StatusOK, util.Response(def.CodeError, err.Error(), nil))
 		return

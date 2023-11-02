@@ -84,20 +84,20 @@ func GetUserInfoByDeviceId(deviceId string) *dao.UserInfo {
 	return u
 }
 
-func PipeGetUserInfo(uids []int) ([]*dao.UserInfo, error) {
-	if len(uids) == 0 {
+func PipeGetUserInfo(dids []string) ([]*dao.UserInfo, error) {
+	if len(dids) == 0 {
 		return []*dao.UserInfo{}, nil
 	}
 	var commands []db.SendCommand
-	pipelineCheckUserInfoTtl(uids)
-	for _, uid := range uids {
-		key := def.HSetUserInfo + strconv.Itoa(uid)
+	pipelineCheckUserInfoTtl(dids)
+	for _, did := range dids {
+		key := def.HSetUserInfo + did
 		commands = append(commands, db.SendCommand{
 			CommandName: "HGETALL",
 			Args:        []interface{}{key},
 		})
 	}
-	logCtx := logrus.WithField("uids", uids)
+	logCtx := logrus.WithField("dids", dids)
 	r, err := redis.Values(db.MainRedis.Send(commands))
 	if err != nil {
 		logCtx.Error("pipeline hgetall user err", err)
@@ -118,31 +118,31 @@ func PipeGetUserInfo(uids []int) ([]*dao.UserInfo, error) {
 	return res, nil
 }
 
-func pipelineCheckUserInfoTtl(uids []int) {
+func pipelineCheckUserInfoTtl(dids []string) {
 	var commands []db.SendCommand
-	for _, uid := range uids {
-		key := def.HSetUserInfo + strconv.Itoa(uid)
+	for _, did := range dids {
+		key := def.HSetUserInfo + did
 		commands = append(commands, db.SendCommand{
 			CommandName: "ttl",
 			Args:        []interface{}{key},
 		})
 	}
-	logCtx := logrus.WithField("uids", uids)
+	logCtx := logrus.WithField("dids", dids)
 	r, err := redis.Ints(db.MainRedis.Send(commands))
 	if err != nil {
 		logCtx.Error("pipeline ttl user err", err)
 		return
 	}
 
-	needLoadUidList := make([]int, 0, len(uids)/4)
-	expireCommands := make([]db.SendCommand, 0, len(uids)/2)
+	needLoadUidList := make([]string, 0, len(dids)/4)
+	expireCommands := make([]db.SendCommand, 0, len(dids)/2)
 	for i, ttl := range r {
 		if ttl == -2 {
-			needLoadUidList = append(needLoadUidList, uids[i])
+			needLoadUidList = append(needLoadUidList, dids[i])
 		} else if ttl < def.DefaultResetExpire {
 			expireCommands = append(expireCommands, db.SendCommand{
 				CommandName: "Expire",
-				Args:        []interface{}{def.HSetUserInfo + strconv.Itoa(uids[i]), def.UserInfoExpire},
+				Args:        []interface{}{def.HSetUserInfo + dids[i], def.UserInfoExpire},
 			})
 		}
 	}
@@ -187,19 +187,19 @@ func pipelineCheckUserInfoTtl(uids []int) {
 	if len(expireCommands) > 0 {
 		_, err = db.MainRedis.Send(expireCommands)
 		if err != nil {
-			logrus.WithField("uid_list", uids).Errorf("[pipelineCheckUserInfoTtl] pipe expire user"+
+			logrus.WithField("did_list", dids).Errorf("[pipelineCheckUserInfoTtl] pipe expire user"+
 				" level info error:%s", err.Error())
 		}
 	}
 }
 
-func batchGetDBUserInfo(uidList []int) (userInfos []dao.UserInfo, err error) {
-	oriSql := "select * from " + def.TableUserInfo + " where uid in (?)"
-	selectSql, args, err := sqlx.In(oriSql, uidList)
+func batchGetDBUserInfo(didList []string) (userInfos []dao.UserInfo, err error) {
+	oriSql := "select * from " + def.TableUserInfo + " where did in (?)"
+	selectSql, args, err := sqlx.In(oriSql, didList)
 	if err != nil {
 		return make([]dao.UserInfo, 0), err
 	}
-	userInfos = make([]dao.UserInfo, 0, len(uidList))
+	userInfos = make([]dao.UserInfo, 0, len(didList))
 	err = db.MysqlDB.Unsafe().Select(&userInfos, selectSql, args...)
 	return
 }

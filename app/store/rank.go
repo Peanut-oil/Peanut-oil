@@ -9,9 +9,9 @@ import (
 	"strconv"
 )
 
-func GetTopList(rankTypeOneClass, rankTypeTwoClass, limit int) []dao.ZsetItem {
+func GetTopList(scoreType, limit int) []dao.ZsetItem {
 	list := make([]dao.ZsetItem, 0)
-	key := def.ZSetRankList + strconv.Itoa(rankTypeOneClass) + ":" + strconv.Itoa(rankTypeTwoClass)
+	key := def.ZSetRankList + strconv.Itoa(scoreType)
 	reply, err := redis.Values(db.MainRedis.Do("ZREVRANGEBYSCORE", key, "+inf", 0, "WITHSCORES", "LIMIT", 0, limit))
 	if err != nil && err != redis.ErrNil {
 		logrus.Errorln("[GetTopList] values err", err)
