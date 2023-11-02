@@ -39,8 +39,8 @@ func GetRankList(c *gin.Context) {
 }
 
 func PostUserInfo(c *gin.Context) {
-	deviceId := c.GetString("device_id")
 	var ps struct {
+		DeviceId    string `json:"device_id" form:"device_id" binding:"required"`
 		ScoreTime   int    `json:"score_time" form:"score_time"`
 		ScoreSpeed  int    `json:"score_speed" form:"score_speed"`
 		ScoreHeight int    `json:"score_height" form:"score_height"`
@@ -53,7 +53,7 @@ func PostUserInfo(c *gin.Context) {
 		c.JSON(http.StatusOK, helper.Response(def.CodeError, def.MsgParamErr, nil))
 		return
 	}
-	err = service.AddRankScoreWithInfo(ps.ScoreTime, ps.ScoreSpeed, ps.ScoreHeight, ps.NickName, ps.Avatar, ps.Country, deviceId)
+	err = service.AddRankScoreWithInfo(ps.ScoreTime, ps.ScoreSpeed, ps.ScoreHeight, ps.NickName, ps.Avatar, ps.Country, ps.DeviceId)
 	if err != nil {
 		c.JSON(http.StatusOK, util.Response(def.CodeError, def.MsgSystemErr, nil))
 		return

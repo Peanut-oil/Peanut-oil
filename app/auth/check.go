@@ -19,11 +19,6 @@ func CheckSign() gin.HandlerFunc {
 		if c.Request.Method == "GET" {
 			return
 		}
-		deviceId := c.GetString("device_id")
-		if deviceId == "" {
-			c.AbortWithStatusJSON(http.StatusOK, serialize.Response(500, "incorrect param", nil))
-			return
-		}
 		signKey := def.SignKey
 		sign := c.Request.FormValue("sign")
 		method := c.Request.Method
