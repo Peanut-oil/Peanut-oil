@@ -57,7 +57,7 @@ func GetRankList(deviceId string, scoreType int) (dao.RankUserInfo, error) {
 		return res, errors.New("无排行数据")
 	}
 
-	dids := make([]string, len(topList))
+	dids := make([]string, 0, len(topList))
 	for _, info := range topList {
 		dids = append(dids, info.Member)
 	}

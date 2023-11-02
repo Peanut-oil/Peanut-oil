@@ -4,8 +4,8 @@ package def
 const (
 	ServerPort    = "10087"
 	RedisPassWord = "xf233@123"
-	RedisAddr     = "localhost:6379"
-	MysqlAddr     = "root:qq937634115@tcp(localhost:3306)/elastic_pet?charset=utf8mb4"
+	RedisAddr     = "localhost:6379"                                                   // 142.171.184.199
+	MysqlAddr     = "root:qq937634115@tcp(localhost:3306)/elastic_pet?charset=utf8mb4" // 142.171.184.199
 	ServerLog     = "/root/serverlog/api"
 )
 
