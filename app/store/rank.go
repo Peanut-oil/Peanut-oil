@@ -28,8 +28,8 @@ func AddRankScore(scoreTime, scoreSpeed, scoreHeight int, did string) error {
 	speedKey := def.ZSetRankList + strconv.Itoa(def.RankTypeSpeed)
 	heightKey := def.ZSetRankList + strconv.Itoa(def.RankTypeHeight)
 
-	db.MainRedis.Do("ZIncrBy", timeKey, scoreTime, did)
-	db.MainRedis.Do("ZIncrBy", speedKey, scoreSpeed, did)
-	db.MainRedis.Do("ZIncrBy", heightKey, scoreHeight, did)
+	db.MainRedis.Do("Zadd", timeKey, scoreTime, did)
+	db.MainRedis.Do("Zadd", speedKey, scoreSpeed, did)
+	db.MainRedis.Do("Zadd", heightKey, scoreHeight, did)
 	return nil
 }
