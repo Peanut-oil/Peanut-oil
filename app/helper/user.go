@@ -13,14 +13,14 @@ func GetUpdateUserInfoChangeFields(info *dao.UserInfo, avatar, nickname, country
 	if country != "" && info.Country != country {
 		fields["country"] = country
 	}
-	if scoreTime != 0 {
-		fields["score_time"] = info.ScoreTime + scoreTime
+	if scoreTime != 0 && scoreTime != info.ScoreTime {
+		fields["score_time"] = scoreTime
 	}
-	if scoreSpeed != 0 {
-		fields["score_speed"] = info.ScoreSpeed + scoreSpeed
+	if scoreSpeed != 0 && scoreSpeed != info.ScoreSpeed {
+		fields["score_speed"] = scoreSpeed
 	}
-	if scoreHeight != 0 {
-		fields["score_height"] = info.ScoreHeight + scoreHeight
+	if scoreHeight != 0 && scoreHeight != info.ScoreHeight {
+		fields["score_height"] = scoreHeight
 	}
 
 	return fields

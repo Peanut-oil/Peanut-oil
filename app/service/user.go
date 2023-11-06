@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func userLoginByDeviceId(scoreTime, scoreSpeed, scoreHeight int, nickName, avatar, country, deviceId string) (*dao.UserInfo, error, bool) {
+func userLoginByDeviceId(scoreTime, scoreSpeed, scoreHeight int, nickName, avatar, country, deviceId string) error {
 	logrus.WithFields(logrus.Fields{"deviceId": deviceId})
 	userInfo := store.GetUserInfoByDeviceId(deviceId)
 	// 用户信息为null，直接注册
@@ -31,9 +31,9 @@ func userLoginByDeviceId(scoreTime, scoreSpeed, scoreHeight int, nickName, avata
 		_, err := store.AddUserInfo(registerInfo)
 		if err != nil {
 			logrus.Errorf("[UserLoginByDeviceId] AddUserInfo err:%s", err.Error())
-			return &dao.UserInfo{}, err, false
+			return err
 		}
-		return registerInfo, nil, true
+		return nil
 	} else { // 更新用户信息
 		changeFields := helper.GetUpdateUserInfoChangeFields(userInfo, avatar, nickName, country, scoreTime, scoreSpeed, scoreHeight)
 		if len(changeFields) > 0 {
@@ -47,7 +47,7 @@ func userLoginByDeviceId(scoreTime, scoreSpeed, scoreHeight int, nickName, avata
 		}
 	}
 
-	return userInfo, nil, false
+	return nil
 }
 
 func GetRankList(deviceId string, scoreType int) (dao.RankUserInfo, error) {
@@ -105,20 +105,11 @@ func GetRankList(deviceId string, scoreType int) (dao.RankUserInfo, error) {
 
 func AddRankScoreWithInfo(scoreTime, scoreSpeed, scoreHeight int, nickName, avatar, country, did string) error {
 	// 首先获取用户信息并且更新
-	userInfo, err, isFresh := userLoginByDeviceId(scoreTime, scoreSpeed, scoreHeight, nickName, avatar, country, did)
+	err := userLoginByDeviceId(scoreTime, scoreSpeed, scoreHeight, nickName, avatar, country, did)
 	if err != nil {
 		return err
 	}
-
-	addScoreTime := scoreTime
-	addScoreSpeed := scoreSpeed
-	addScoreHeigh := scoreHeight
-	if !isFresh {
-		addScoreTime += userInfo.ScoreTime
-		addScoreSpeed += userInfo.ScoreSpeed
-		addScoreHeigh += userInfo.ScoreHeight
-	}
-	store.AddRankScore(addScoreTime, addScoreSpeed, addScoreHeigh, did)
+	store.AddRankScore(scoreTime, scoreSpeed, scoreHeight, did)
 
 	return nil
 }
