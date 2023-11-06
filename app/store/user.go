@@ -9,7 +9,6 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -158,13 +157,13 @@ func pipelineCheckUserInfoTtl(dids []string) {
 			}
 			cacheCommands := make([]db.SendCommand, 0, len(existUidList))
 			for i := 0; i < len(userInfos); i++ {
-				uid := userInfos[i].Uid
+				did := userInfos[i].DeviceId
 				fieldsMap, err := helper.Struct2Map(userInfos[i], "redis")
 				if err != nil {
-					logrus.WithField("uid", uid).WithField("info", userInfos[i]).Errorf("[pipelineCheckUserInfoTtl] struct to map error:%s", err.Error())
+					logrus.WithField("did", did).WithField("info", userInfos[i]).Errorf("[pipelineCheckUserInfoTtl] struct to map error:%s", err.Error())
 					continue
 				}
-				infoKey := def.HSetUserInfo + strconv.Itoa(uid)
+				infoKey := def.HSetUserInfo + did
 				cacheCommands = append(cacheCommands, db.SendCommand{
 					CommandName: "HMSet",
 					Args:        redis.Args{}.Add(infoKey).AddFlat(fieldsMap),
@@ -194,7 +193,7 @@ func pipelineCheckUserInfoTtl(dids []string) {
 }
 
 func batchGetDBUserInfo(didList []string) (userInfos []dao.UserInfo, err error) {
-	oriSql := "select * from " + def.TableUserInfo + " where did in (?)"
+	oriSql := "select * from " + def.TableUserInfo + " where device_id in (?)"
 	selectSql, args, err := sqlx.In(oriSql, didList)
 	if err != nil {
 		return make([]dao.UserInfo, 0), err
